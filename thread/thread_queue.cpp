@@ -4,11 +4,13 @@
 
 using namespace daocode;
 
-threadQueue::threadQueue():max_size_queue(1024),thread_cnt(1),is_start(0)
+threadQueue::threadQueue():max_size_queue(1024),thread_cnt(5),is_start(0)
 {
 }
 threadQueue::~threadQueue()
 {
+    stop();
+    std::cout<<"~threadQueue...\n";
 }
 
 
@@ -29,14 +31,18 @@ void threadQueue::Process()
     while(is_start){
         //std::unique_lock <std::mutex> lck (mtx);
         while(!thrPtrs.empty()){
+            std::cout<<"Process  \n";
             ThreadfuncPtr work = thrPtrs.front();
             thrPtrs.pop_front();
             lck.unlock();
             work();
             lck.lock();
         }
+        std::cout<<"wait\n";
         cond.wait(lck);
     }
+
+    std::cout<<"Process...\n";
 }
 void threadQueue::start()
 {
@@ -49,4 +55,22 @@ void threadQueue::start()
         }
     }
     std::cout<<"start....\n";
+}
+
+void threadQueue::stop()
+{
+    std::cout<<"stop\n";
+    if(!is_start)
+        return ;
+    is_start=false;
+    cond.notify_all();//如果在cond.wait之前发，导致阻塞在cond.wait
+
+    for(int i=0;i<(int)work_threads.size();i++){
+        if (work_threads[i]->joinable())
+            work_threads[i]->join();//如果任务干完了，阻塞在这里还可，如果没干完，阻塞则导致notify_all，发出后接收不到
+        //work_threads[i]->detach();
+    }
+
+
+    std::cout<<"stop...\n";
 }
