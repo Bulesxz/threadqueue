@@ -1,6 +1,7 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 #include <string>
+namespace daocode{
 class Buffer{
 public:
         Buffer():seek_(0),rw_index(false){}
@@ -20,4 +21,5 @@ private:
         bool rw_index; //read false,wirte,true
 
 };
+}
 #endif

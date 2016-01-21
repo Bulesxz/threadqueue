@@ -1,7 +1,7 @@
 #ifndef ANY_H
 #define ANY_H
 #define NULL 0
-
+namespace daocode{
 
 class PlaceHolder
 {
@@ -17,7 +17,7 @@ class Holder : public PlaceHolder {
 	public:
 		Holder(const ValueType& value):held_(value) {;}
 		virtual ~Holder(){}
-		virtual PlaceHolder* clone() const 
+		virtual PlaceHolder* clone() const
 		{
 			  return new Holder(held_);
 		}
@@ -34,7 +34,7 @@ class Any {
 		}
 
 		Any(const Any& other) : content_(other.content_ ? other.content_->clone() : NULL) {}
-		
+
 		~Any() {
 			if (content_ != NULL)
 			{
@@ -42,7 +42,7 @@ class Any {
 				content_ = NULL;
 			}
 		}
-		
+
 		template<typename ValueType>
 		ValueType * any_cast() {
 			if (content_ == NULL)
@@ -52,11 +52,12 @@ class Any {
 		}
 
 
-		
+
 	private:
 		PlaceHolder* content_;
 };
 
+}
 /*
 template<typename ValueType>
 ValueType* any_cast() {
@@ -70,4 +71,4 @@ ValueType* any_cast() {
 
 
 
-#endif 
+#endif

@@ -3,7 +3,7 @@
 
 #include <condition_variable>
 #include <mutex>
-
+#include <nonablecopy.h>
 namespace daocode{
 class Condition:public nonablecopy {
 public:

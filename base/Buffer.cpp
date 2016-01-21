@@ -1,6 +1,6 @@
 #include "Buffer.h"
-
- void Buffer::append(const char* data,int len)//–¥»Î
+using namespace daocode;
+void Buffer::append(const char* data,int len)//–¥»Î
 {
         buffer_[!rw_index].append(data,len);
 }
