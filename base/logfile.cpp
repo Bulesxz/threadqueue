@@ -6,21 +6,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <logger.h>
 using namespace daocode;
-LogFile::LogFile(std::string filename,int rotate_size=1024*1024*5):fp_(NULL),total_(0),rotate_size_(rotate_size),filename_(filename)
+LogFile::LogFile(std::string filename,int rotate_size):fp_(NULL),total_(0),rotate_size_(rotate_size),filename_(filename)
 {
-}
-
-LogFile::LogFile()
-{
-    fp_=NULL;
-    total_=0;
-}
-
-LogFile::init(std::string filename,int rotate_size=1024*1024*5)
-{
-    setFilename( filename, rotate_size);
-    setRotateSize( rotate_size);
 }
 
 LogFile::~LogFile()
@@ -29,7 +18,7 @@ LogFile::~LogFile()
 }
 int LogFile::open()
 {
-    if (filename.empty() || rotate_size <=0){
+    if (filename_.empty() || rotate_size_ <=0){
         return 1;
     }
     FILE* fd = fopen(filename_.c_str(),"a");

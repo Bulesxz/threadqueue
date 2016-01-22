@@ -1,20 +1,14 @@
-#include "Asynclog.h"
+#include <Asynclog.h>
 #include <string.h>
 #include <iostream>
 using namespace daocode;
-AsyncLog::AsyncLog()
-{
-}
+
+char LOG[6][8]={"TRACE","DEBUG","INFO","WARN","ERROR","FATAL"};
+
 AsyncLog::AsyncLog(std::string filename,int rotate_size):file(filename,rotate_size),is_start(false)
 {
 }
 
-void AsyncLog::init(std::string filename,int rotate_size)
-{
-    setFilename( filename, rotate_size);
-    setRotateSize( rotate_size);
-    file.init();
-}
 AsyncLog::~AsyncLog()
 {
     cond.notify_one();
@@ -28,6 +22,7 @@ int AsyncLog::start()
         return 1;
     }
     thread_log.reset (new std::thread(std::bind(&AsyncLog::log_write,this)) );
+    return 0;
 }
 void AsyncLog::log_out(const char *data,int len)//多个线程
 {
@@ -71,11 +66,9 @@ void AsyncLog::log_write()//一个线程
     }
 }
 
-void AsyncLog::setFilename(std::string filename,int rotate_size)
+void AsyncLog::write(LogLevel level,const char* filename,int line,const char* func,const char *msg)
 {
-    filename_ = filename;
-}
-void LogFile::setRotateSize(int rotate_size)
-{
-    rotate_size_= rotate_size;
+    char buf[4096]={0};
+    int len = snprintf(buf, 4096,"[%s %s %d %s %s \n]",LOG[level],filename,line,func,msg);
+    log_out(buf,len);
 }

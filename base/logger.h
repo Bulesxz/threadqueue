@@ -1,25 +1,22 @@
 #ifndef LOGGER_H
 #define LOGGER_H
-
+#include <log.h>
 namespace daocode{
-enum LogLevel
-{
-    LEVEL_TRACE=1;
-    LEVEL_DEBUG,
-    LEVEL_INFO,
-    LEVEL_WARN,
-    LEVEL_ERROR,
-    LEVEL_FATAL
-};
 
-class Logger{
-    virtual void log_out(LogLevel level,const char* filename,int line,const char* func,const char *msg)
+class BaseLogger{
+public:
+    BaseLogger();
+    ~BaseLogger();
+public:
+    virtual void write(LogLevel level,const char* filename,int line,const char* func,const char *msg);
     virtual void log_write(LogLevel level,const char* filename,int line,const char* func,const char* fmt,...);
+    virtual int start(){return 0;};
     void set_level(int level);
 private:
     bool check_level(int level);
     int curr_level;
 };
+
 
 class CSingletonLogger
 {
@@ -27,27 +24,48 @@ private:
     CSingletonLogger()   //构造函数是私有的
     {
     }
-    static Logger *logger_;
+    static CSingletonLogger* m_instance;
+    static BaseLogger *logger_;
 public:
-    static Logger * GetInstance()
+    static CSingletonLogger * GetInstance()
     {
-        if(logger == NULL)  //判断是否第一次调用
-            logger = new AsyncLog();
-        return logger_;
+        if(m_instance == NULL)  //判断是否第一次调用
+        {
+            m_instance = new CSingletonLogger;
+            logger_=NULL;
+        }
+        return m_instance;
     }
+
+    BaseLogger *get_logger()
+    {
+        if (logger_!=NULL)
+            return logger_;
+        else
+            return NULL;
+    }
+    void set_logger(BaseLogger *loger)
+    {
+        logger_ = loger;
+    }
+
 };
-}
+
+
 #define LOG_TRACE(fmt,...)    \
-        simcode::GlobalLogger::logger().log_write(daocode::LogLevel::LEVEL_TRACE, __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
+        daocode::CSingletonLogger::GetInstance().get_logger()->log_write(LEVEL_TRACE, __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
 #define LOG_DEBUG(fmt,...)    \
-        simcode::GlobalLogger::logger().log_write(daocode::LogLevel::LEVEL_DEBUG, __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
+        daocode::CSingletonLogger::GetInstance().get_logger()->log_write(LEVEL_DEBUG, __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
 #define LOG_INFO(fmt,...)    \
-        simcode::GlobalLogger::logger().log_write(daocode::LogLevel::LEVEL_INFO,  __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
+        daocode::CSingletonLogger::GetInstance().get_logger()->log_write(LEVEL_INFO,  __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
 #define LOG_WARN(fmt,...)    \
-        simcode::GlobalLogger::logger().log_write(daocode::LogLevel::LEVEL_WARN,  __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
+        daocode::CSingletonLogger::GetInstance().get_logger()->log_write(LEVEL_WARN,  __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
 #define LOG_ERROR(fmt,...)    \
-        simcode::GlobalLogger::logger().log_write(daocode::LogLevel::LEVEL_ERROR, __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
+        daocode::CSingletonLogger::GetInstance()->get_logger()->log_write(LEVEL_ERROR, __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
 #define LOG_FATAL(fmt,...)    \
-        simcode::GlobalLogger::logger().log_write(daocode::LogLevel::LEVEL_FATAL, __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
+        daocode::CSingletonLogger::GetInstance().get_logger()->log_write(LEVEL_FATAL, __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
+
+
+}
 
 #endif // LOGGER_H

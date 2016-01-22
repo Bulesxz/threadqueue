@@ -5,11 +5,13 @@
 namespace daocode{
 class LogFile{
 public:
-    LogFile();
+    LogFile(std::string filename,int rotate_size=1024*1024*5);
     ~LogFile();
     int open();
     void close();
     void Write(const char*data,int len);
+    void setFilename(std::string filename);
+    void setRotateSize(int rotate_size);
 private:
     void rotate();
 private:

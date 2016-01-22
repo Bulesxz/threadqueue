@@ -1,27 +1,32 @@
-#include "logger.h"
+#include <logger.h>
+#include <stdarg.h>
+#include<stdio.h>
+
 using namespace daocode;
-Logger::Logger()
+CSingletonLogger* CSingletonLogger::m_instance=NULL;
+BaseLogger * CSingletonLogger::logger_=NULL;
+BaseLogger::BaseLogger()
 {
 
 }
 
-Logger::~Logger()
+BaseLogger::~BaseLogger()
 {
 
 }
 
-void Logger::set_level(int level)
+void BaseLogger::set_level(int level)
 {
-    level_ = level;
+    curr_level = level;
 }
 
-bool Logger::check_level(int level)
+bool BaseLogger::check_level(int level)
 {
-    return level>=level_;//大于当前设置的级别
+    return level>=curr_level;//大于当前设置的级别
 }
 
 
-void Logger::log_write(LogLevel level,const char* filename,int line,const char* func,const char* fmt, ...)
+void BaseLogger::log_write(LogLevel level,const char* filename,int line,const char* func,const char* fmt, ...)
 {
     if ( !check_level(level) ){
         return ;
@@ -31,11 +36,11 @@ void Logger::log_write(LogLevel level,const char* filename,int line,const char* 
     va_start(ap, fmt);
     char buf[4096];
     vsnprintf(buf, 4096, fmt, ap);
-    log_out(level, filename, line, func, buf);
+    write(level, filename, line, func, buf);
     va_end(ap);
 }
 
-void Logger::log_out(LogLevel level,const char* filename,int line,const char* func,const char *msg)
+void BaseLogger::write(LogLevel level,const char* filename,int line,const char* func,const char *msg)
 {
       printf("log_level=%d|%s|%d|%s|%s\n", level, filename, line, func, msg);
 }
