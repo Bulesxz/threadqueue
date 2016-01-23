@@ -12,7 +12,7 @@
 #include <log.h>
 namespace daocode{
 
-class AsyncLog: public nonablecopy,BaseLogger {
+class AsyncLog: public nonablecopy,public BaseLogger {
 public:
     AsyncLog(std::string filename,int rotate_size);
     ~AsyncLog();

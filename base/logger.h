@@ -1,6 +1,7 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 #include <log.h>
+#include <iostream>
 namespace daocode{
 
 class BaseLogger{
@@ -49,6 +50,17 @@ public:
         logger_ = loger;
     }
 
+    class CGarbo //它的唯一工作就是在析构函数中删除CSingleton的实例
+    {
+        public:
+            ~CGarbo()
+            {
+                if( CSingletonLogger::m_instance )
+                    std::cout<<"~m_instance\n";
+                    delete CSingletonLogger::m_instance;
+            }
+    };
+    static CGarbo Garbo; //定义一个静态成员，程序结束时，系统会自动调用它的析构函数
 };
 
 

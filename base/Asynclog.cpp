@@ -11,6 +11,7 @@ AsyncLog::AsyncLog(std::string filename,int rotate_size):file(filename,rotate_si
 
 AsyncLog::~AsyncLog()
 {
+    std::cout<<"AsyncLog::~AsyncLog\n";
     cond.notify_one();
     if (thread_log) thread_log->join();
 }
@@ -22,6 +23,7 @@ int AsyncLog::start()
         return 1;
     }
     thread_log.reset (new std::thread(std::bind(&AsyncLog::log_write,this)) );
+    std::cout<<"AsyncLog::start\n";
     return 0;
 }
 void AsyncLog::log_out(const char *data,int len)//多个线程
@@ -31,6 +33,7 @@ void AsyncLog::log_out(const char *data,int len)//多个线程
    // sprintf(data,"time :%s i:%d \n",__TIME__,i);
     buff.append(data,strlen(data));
     cond.notify_one();
+    std::cout<<"AsyncLog::log_out\n";
 }
 void AsyncLog::log_write()//一个线程
 {
@@ -62,13 +65,17 @@ void AsyncLog::log_write()//一个线程
             lck.unlock();
         }
         lck.lock();
+        std::cout<<"cond.wait...\n";
         cond.wait(lck);
+        std::cout<<"cond.wait\n";
     }
 }
 
 void AsyncLog::write(LogLevel level,const char* filename,int line,const char* func,const char *msg)
 {
     char buf[4096]={0};
-    int len = snprintf(buf, 4096,"[%s %s %d %s %s \n]",LOG[level],filename,line,func,msg);
+    int len = snprintf(buf, 4096,"[%s %s %d %s ]%s \n",LOG[level],filename,line,func,msg);
+    //std::cout<<buf;
+
     log_out(buf,len);
 }

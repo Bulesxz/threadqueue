@@ -1,27 +1,31 @@
 #include "Buffer.h"
+
+#include<iostream>
 using namespace daocode;
-void Buffer::append(const char* data,int len)//Ğ´Èë
+void Buffer::append(const char* data,int len)//å†™å…¥
 {
-        buffer_[!rw_index].append(data,len);
+
+        buffer_[write_index].append(data,len);
 }
 
  void Buffer::append(const std::string& data)
 {
-         buffer_[!rw_index].append(data);
+         buffer_[write_index].append(data);
 }
 
- int Buffer::readableBytes()//¿É¶ÁµÄ×Ö½Ú
+ int Buffer::readableBytes()//å¯è¯»çš„å­—èŠ‚
 {
-        return buffer_[rw_index].size() - seek_;
+    std::cout<<std::endl;
+        return buffer_[read_index].size() - seek_;
 }
  const char* Buffer::GetPeek()
 {
-        return buffer_[rw_index].data() + seek_;
+        return buffer_[read_index].data() + seek_;
 }
 
  void Buffer::changeIndex()
 {
-        rw_index = !rw_index;
+    std::swap(read_index,write_index);
 }
  void Buffer::seek(int n)
 {
@@ -39,10 +43,10 @@ void Buffer::append(const char* data,int len)//Ğ´Èë
 
 void Buffer::clearReadbuf()
 {
-    buffer_[rw_index].clear();
+    buffer_[read_index].clear();
 }
 
 const std::string & Buffer::writeBuffRef()
 {
-    return   buffer_[!rw_index];
+    return   buffer_[write_index];
 }

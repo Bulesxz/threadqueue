@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <logger.h>
+#include <iostream>
 using namespace daocode;
 LogFile::LogFile(std::string filename,int rotate_size):fp_(NULL),total_(0),rotate_size_(rotate_size),filename_(filename)
 {
@@ -14,6 +15,7 @@ LogFile::LogFile(std::string filename,int rotate_size):fp_(NULL),total_(0),rotat
 
 LogFile::~LogFile()
 {
+    std::cout<<"LogFile::~LogFile\n";
     close();
 }
 int LogFile::open()
@@ -43,6 +45,7 @@ void LogFile::close()
 {
     if (fp_ != NULL)
     {
+        fflush(fp_);
         fclose(fp_);
     }
 }
@@ -54,6 +57,8 @@ void LogFile::Write(const char*data,int len)
         LOG_ERROR("error=%s\n", strerror(errno));
         return ;
     }
+    if (len>=4096)
+        fflush(fp_);
     total_ += len_;
     if (rotate_size_ >0 && total_ >= rotate_size_){
         rotate();
