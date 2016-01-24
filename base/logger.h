@@ -7,7 +7,7 @@ namespace daocode{
 class BaseLogger{
 public:
     BaseLogger();
-    ~BaseLogger();
+    virtual ~BaseLogger();
 public:
     virtual void write(LogLevel level,const char* filename,int line,const char* func,const char *msg);
     virtual void log_write(LogLevel level,const char* filename,int line,const char* func,const char* fmt,...);
@@ -25,17 +25,13 @@ private:
     CSingletonLogger()   //构造函数是私有的
     {
     }
-    static CSingletonLogger* m_instance;
+    ~CSingletonLogger(){}
     static BaseLogger *logger_;
 public:
     static CSingletonLogger * GetInstance()
     {
-        if(m_instance == NULL)  //判断是否第一次调用
-        {
-            m_instance = new CSingletonLogger;
-            logger_=NULL;
-        }
-        return m_instance;
+        static  CSingletonLogger m_instance;
+        return &m_instance;
     }
 
     BaseLogger *get_logger()
@@ -55,11 +51,13 @@ public:
         public:
             ~CGarbo()
             {
-                if( CSingletonLogger::m_instance )
-                    std::cout<<"~m_instance\n";
-                    delete CSingletonLogger::m_instance;
+                std::cout<<"~m_instance\n";
+                if(CSingletonLogger::GetInstance()->get_logger()){
+                    delete CSingletonLogger::GetInstance()->get_logger();
+                }
             }
     };
+private:
     static CGarbo Garbo; //定义一个静态成员，程序结束时，系统会自动调用它的析构函数
 };
 

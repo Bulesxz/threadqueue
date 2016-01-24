@@ -60,7 +60,7 @@ int main()
         work_threads[i]->join();
     }*/
 
-    //while(true);
-    std::this_thread::sleep_for(std::chrono::milliseconds(10000));//等待任务干完
+    while(true);
+    //std::this_thread::sleep_for(std::chrono::milliseconds(10000));//等待任务干完
     return 0;
 }

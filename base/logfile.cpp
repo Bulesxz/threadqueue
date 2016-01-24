@@ -52,12 +52,13 @@ void LogFile::close()
 
 void LogFile::Write(const char*data,int len)
 {
+    std::cout<<"LogFile::Write\n";
     int len_ = fwrite(data,len,1,fp_);
     if (len_<=0){
         LOG_ERROR("error=%s\n", strerror(errno));
         return ;
     }
-    if (len>=4096)
+    //if (len>=4096)
         fflush(fp_);
     total_ += len_;
     if (rotate_size_ >0 && total_ >= rotate_size_){

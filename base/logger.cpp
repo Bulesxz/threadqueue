@@ -3,8 +3,10 @@
 #include<stdio.h>
 
 using namespace daocode;
-CSingletonLogger* CSingletonLogger::m_instance=NULL;
+
 BaseLogger * CSingletonLogger::logger_=NULL;
+CSingletonLogger::CGarbo CSingletonLogger::Garbo;
+
 BaseLogger::BaseLogger()
 {
 

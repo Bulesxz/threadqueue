@@ -1,6 +1,7 @@
 #include <Asynclog.h>
 #include <string.h>
 #include <iostream>
+#include <stdio.h>
 using namespace daocode;
 
 char LOG[6][8]={"TRACE","DEBUG","INFO","WARN","ERROR","FATAL"};
@@ -11,9 +12,8 @@ AsyncLog::AsyncLog(std::string filename,int rotate_size):file(filename,rotate_si
 
 AsyncLog::~AsyncLog()
 {
-    std::cout<<"AsyncLog::~AsyncLog\n";
-    cond.notify_one();
-    if (thread_log) thread_log->join();
+    printf("AsyncLog::~AsyncLog\n");
+    stop();
 }
 int AsyncLog::start()
 {
@@ -78,4 +78,11 @@ void AsyncLog::write(LogLevel level,const char* filename,int line,const char* fu
     //std::cout<<buf;
 
     log_out(buf,len);
+}
+
+void AsyncLog::stop()
+{
+    is_start=false;
+    cond.notify_one();
+    if (thread_log) thread_log->join();
 }

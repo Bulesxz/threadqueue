@@ -19,6 +19,7 @@ public:
      void log_write();
      void log_out(const char *data,int len);
     int start();
+    void stop();
     void write(LogLevel level,const char* filename,int line,const char* func,const char *msg);
 private:
     LogFile file;
