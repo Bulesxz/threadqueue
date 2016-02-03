@@ -9,6 +9,11 @@ public:
 		memset(&_addr, 0, sizeof(struct sockaddr_in));
 		 _addr.sin_family = AF_INET;
 	}
+
+	InetAddr(const struct sockaddr_in &addr){
+                memcpy(&_addr, &addr, sizeof(struct sockaddr_in));
+        }
+
 /*
 	void set_family(short family){ 
 		_addr.sin_family = family;

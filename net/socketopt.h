@@ -5,9 +5,12 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <unistd.h>
-
+#include <stdio.h>
 #include "InetAddr.h"
 
+/*
+*如果有错误，返回值为错误码的相反数，-errno
+*/
 class SocketOpt{
 public :
 	#define INVALID -1
@@ -68,12 +71,11 @@ public :
 	{
 		errno = 0;
 		//int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
-		socklen_t len;
+		socklen_t len=0;
 		int ret = ::accept(_socket_fd,addr->addr(),&len);
 		if (ret < 0) {
                         return errno ? -errno : ret;
                 }
-		
                 return ret;
 	}
 
@@ -87,6 +89,7 @@ public :
 		if (ret < 0) {
 			return 	errno ? -errno : ret;
 		}
+
 		return 0;
 	}
 	
@@ -108,7 +111,77 @@ public :
                 return size;
 	}
 
-	void close()
+	int set_reuseaddr()
+	{
+		int option_value=true;
+		int ret = ::setsockopt(_socket_fd,SOL_SOCKET, SO_REUSEADDR,(const void *) &option_value,sizeof(option_value));
+		return (ret < 0) ? (errno ? -errno : ret) : 0;
+	}
+
+	int set_reuseport()
+	{
+		int option_value=true;
+		int ret = ::setsockopt(_socket_fd,SOL_SOCKET, SO_REUSEPORT,(const void *) &option_value,sizeof(option_value));
+		return (ret < 0) ? (errno ? -errno : ret) : 0;
+	}
+
+
+	int setNonBlockAndCloseOnExec()
+	{
+		//set-nonblock
+		int flags = ::fcntl(_socket_fd, F_GETFL, 0);
+		flags |= O_NONBLOCK;
+		int ret = ::fcntl(_socket_fd, F_SETFL, flags);
+		// close-on-exec
+		flags = ::fcntl(_socket_fd, F_GETFD, 0);
+		flags |= FD_CLOEXEC;
+		ret = ::fcntl(_socket_fd, F_SETFD, flags);
+		return ret;
+	}
+
+	int setKeepAlive(bool on)
+	{
+		int optval = on ? 1 : 0;
+		errno =0;
+		int ret = ::setsockopt(_socket_fd, SOL_SOCKET, SO_KEEPALIVE,&optval, sizeof(optval));
+		return (ret < 0) ? (errno ? -errno : ret) : 0;
+	}
+
+	int getError() const
+	{
+		int optval;
+		socklen_t optlen = static_cast<socklen_t>(sizeof optval);
+		int ret = ::getsockopt(_socket_fd, SOL_SOCKET, SO_ERROR, &optval, &optlen);
+		return (ret < 0) ? (errno ? -errno : ret) : ret;
+	}
+
+	struct sockaddr_in getAddr() const
+	{
+		struct sockaddr_in localaddr;
+		bzero(&localaddr, sizeof localaddr);
+		socklen_t addrlen = static_cast<socklen_t>(sizeof localaddr);
+		int ret = ::getsockname(_socket_fd, (struct sockaddr*)(&localaddr), &addrlen);
+		if (ret < 0)
+		{
+			printf("sockets::getLocalAddr\n");
+		}
+		return localaddr;
+	}
+
+
+	struct sockaddr_in getPeerAddr() const
+	{
+		struct sockaddr_in peeraddr;
+		bzero(&peeraddr, sizeof peeraddr);
+		socklen_t addrlen = static_cast<socklen_t>(sizeof peeraddr);
+		if (::getpeername(_socket_fd, (struct sockaddr*)(&peeraddr), &addrlen) < 0)
+		{
+			printf("sockets::getPeerAddr\n");
+		}
+		return peeraddr;
+	}
+
+	void close() //主动关闭的话会停留在TIME_WAIT 几分钟 ，这时再打开，会出现  Address already in use 
         {
             if (!isInvalid ())
             {
@@ -118,6 +191,7 @@ public :
             }
         }
 
+	
 private:
 	bool isInvalid(){
 		if (_socket_fd==INVALID)

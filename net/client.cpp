@@ -13,11 +13,13 @@ int  main()
 	if (ret < 0){
                 printf("%s \n",strerror(-ret));
         }
+
 	ret = opt.connect(ip,port);
         if (ret < 0 ){
                 printf("%s \n",strerror(-ret));
         }
 	
+	opt.setNonBlockAndCloseOnExec();
 	char buf[128]={0};
 	ret = opt.read(buf,128);
 	if (ret < 0){
@@ -26,12 +28,11 @@ int  main()
 	printf("%s %d\n",buf,ret);
 	
 
-/*
-        std::string msg="hello";
+
+        std::string msg="hello server";
         ret = opt.write(msg.c_str(),msg.length());
         if (ret < 0){
                 printf("%s \n",strerror(-ret));
         }
-*/
 	return 0;
 }
