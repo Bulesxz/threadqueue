@@ -1,10 +1,7 @@
 #ifndef TIMER_H
 #define TIMER_H
-#include<functional>
-#include<atomic>
-
-typedef std::function<void(void)> TimerCallback;
-typedef long Timestamp;
+#include <atomic>
+#include "typedef.h"
 
 class Timer{
 

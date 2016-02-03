@@ -1,6 +1,8 @@
 #include "timer.h"
-
+#include <iostream>
 #include <sys/timerfd.h>
+#include <sys/time.h>
+#include <strings.h>
 
 std::atomic_long Timer::timer_numCreated_(0);
 
@@ -16,24 +18,25 @@ int createTimerfd()
   return timerfd;
 }
 
+
 Timestamp Now()
 {
-    struct timeval us;
-    gettimeofday(&us,NULL);
-    return Timestamp(us.tv_sec*1000000 + us.tv_usec);
+    struct timespec ns={0, 0};  
+    clock_gettime(CLOCK_REALTIME, &ns);  
+    return Timestamp(ns.tv_sec*1000000000 + ns.tv_nsec);
 }
 
-timeval TimestampTotimeval(Timestamp microseconds)
+timespec TimestampTotimespec(Timestamp nsec)
 {
-    struct timeval tl;
-    tl.tv_sec = microseconds/1000000;
-    tl.tv_usec = microseconds%1000000;
-    return tl;
+    struct timespec ts;
+    ts.tv_sec = nsec/1000000000;
+    ts.tv_nsec = nsec%1000000000;
+    return ts;
 }
-struct timeval howMuchTimeFromNow(Timestamp when)
+struct timespec howMuchTimeFromNow(Timestamp when)
 {
-    Timestamp microseconds = when - Now();
-    return TimestampTotimeval(microseconds);
+    Timestamp nsec = when - Now();
+    return TimestampTotimespec(nsec);
 }
 
 void resetTimerfd(int timerfd, Timestamp expiration)
@@ -43,7 +46,7 @@ void resetTimerfd(int timerfd, Timestamp expiration)
   struct itimerspec oldValue;
   bzero(&newValue, sizeof newValue);
   bzero(&oldValue, sizeof oldValue);
-  newValue.it_value = howMuchTimeFromNow(expiration);
+  newValue.it_value = howMuchTimeFromNow(expiration);//¿¿¿¿¿¿¿
   int ret = ::timerfd_settime(timerfd, 0/*Ïà¶ÔÊ±¼ä*/, &newValue, &oldValue);
   if (ret)
   {

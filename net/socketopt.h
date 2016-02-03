@@ -76,7 +76,7 @@ public :
 		if (ret < 0) {
                         return errno ? -errno : ret;
                 }
-                return ret;
+        return ret;
 	}
 
 	int connect(const std::string &ip,unsigned short port) 
@@ -111,16 +111,16 @@ public :
                 return size;
 	}
 
-	int set_reuseaddr()
+	int set_reuseaddr( int option_value=true)
 	{
-		int option_value=true;
+		option_value=true;
 		int ret = ::setsockopt(_socket_fd,SOL_SOCKET, SO_REUSEADDR,(const void *) &option_value,sizeof(option_value));
 		return (ret < 0) ? (errno ? -errno : ret) : 0;
 	}
 
-	int set_reuseport()
+	int set_reuseport( int option_value=true)
 	{
-		int option_value=true;
+		option_value=true;
 		int ret = ::setsockopt(_socket_fd,SOL_SOCKET, SO_REUSEPORT,(const void *) &option_value,sizeof(option_value));
 		return (ret < 0) ? (errno ? -errno : ret) : 0;
 	}
@@ -191,7 +191,10 @@ public :
             }
         }
 
-	
+	int get_fd()
+	{
+		return _socket_fd;
+	}	
 private:
 	bool isInvalid(){
 		if (_socket_fd==INVALID)
