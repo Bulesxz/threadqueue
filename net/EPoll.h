@@ -15,13 +15,13 @@ public:
 	~EPoll(){::close(epollfd_);}
 	Timestamp poll(int timeoutMs, ChannelList* activeChannels);
 	void fillActiveChannels(int numEvents,ChannelList* activeChannels);
-	int  update(int operation,ChannelPtr& channel);
+	int  update(int operation,const ChannelPtr& channel);
 
-	int remove(ChannelPtr & channel){return update(EPOLL_CTL_DEL,channel);}
+	int remove(const ChannelPtr & channel){return update(EPOLL_CTL_DEL,channel);}
 
-	int add(ChannelPtr & channel){return  update(EPOLL_CTL_ADD,channel);}
+	int add(const ChannelPtr & channel){return  update(EPOLL_CTL_ADD,channel);}
 
-	int modify(ChannelPtr & channel){return update(EPOLL_CTL_MOD,channel);}
+	int modify(const ChannelPtr & channel){return update(EPOLL_CTL_MOD,channel);}
 
 private:
 	int epollfd_;

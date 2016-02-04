@@ -41,6 +41,23 @@ class Channel{
 		int get_fd(){
 			return fd_;
 		}
+		
+		void update();
+  		bool isNoneEvent() const { return events_ == kNoneEvent; }
+
+  		void enableReading() { events_ |= kReadEvent; update(); }
+  		void disableReading() { events_ &= ~kReadEvent; update(); }
+  		void enableWriting() { events_ |= kWriteEvent; update(); }
+  		void disableWriting() { events_ &= ~kWriteEvent; update(); }
+  		void disableAll() { events_ = kNoneEvent; update(); }
+  		bool isWriting() const { return events_ & kWriteEvent; }
+  		bool isReading() const { return events_ & kReadEvent; }
+
+	private:
+		static const int kNoneEvent;
+		static const int kReadEvent;
+		static const int kWriteEvent;
+
 	private:
 		EventLoop* loop_;
 		int fd_;

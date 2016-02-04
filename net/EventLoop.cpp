@@ -13,6 +13,7 @@ EventLoop::EventLoop(int timeoutMs):
 	wakeupChannel_(new Channel(this,wakeupFd_))
 {
 	wakeupChannel_->setReadCallback(std::bind(&EventLoop::wakeupRead,this));
+	wakeupChannel_->enableReading();
 	poller_.add(wakeupChannel_);
 }
 
@@ -79,12 +80,12 @@ void EventLoop::wakeupRead()
   }
 }
 
-void EventLoop::addChannel(ChannelPtr& channel)
+void EventLoop::addChannel(const ChannelPtr& channel)
 {
 	poller_.add(channel);
 }
 
-void EventLoop::updateChannel(ChannelPtr& channel)
+void EventLoop::updateChannel(const ChannelPtr& channel)
 {
 	poller_.modify(channel);
 }

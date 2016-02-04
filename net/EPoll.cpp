@@ -1,6 +1,7 @@
 #include "EPoll.h"
 Timestamp EPoll::poll(int timeoutMs, ChannelList* activeChannels)
 {
+	std::cout<<"log "<<epollfd_<<" "<<events_.size();
   int numEvents = ::epoll_wait(epollfd_,
                                &*events_.begin(),
                                static_cast<int>(events_.size()),
@@ -22,6 +23,7 @@ Timestamp EPoll::poll(int timeoutMs, ChannelList* activeChannels)
     {
       errno = savedErrno;
      std::cout << "EPollPoller::poll()";
+	  std::cout << strerror(errno);
     }
   }
   return now;
@@ -39,7 +41,7 @@ void EPoll::fillActiveChannels(int numEvents,ChannelList * activeChannels)
   }
 }
 
-int  EPoll::update(int operation, ChannelPtr& channel)
+int  EPoll::update(int operation, const ChannelPtr& channel)
 {
   struct epoll_event event;
   bzero(&event, sizeof event);

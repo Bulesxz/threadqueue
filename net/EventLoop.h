@@ -14,8 +14,8 @@ class EventLoop{
 			else
 				return false;
 		}
-		void updateChannel(ChannelPtr& channel);
-		void addChannel(ChannelPtr& channel);
+		void updateChannel(const ChannelPtr& channel);
+		void addChannel(const ChannelPtr& channel);
 		void runInloop(const Callback& cb);
 		void DoPendingFunctor();
 		void wakeup();

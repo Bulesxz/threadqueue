@@ -7,6 +7,7 @@
 #include <memory> //智能指针相关
 #include <iostream>
 #include <assert.h>
+#include <string.h>
 typedef long Timestamp;//纳秒
 typedef std::function<void()> TimerCallback;
 typedef  std::function<void()> Callback;
