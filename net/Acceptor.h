@@ -9,9 +9,9 @@ public:
 		sock.close();
 	}
 
-	int listen(int max_con)
+	void listen(int max_con)
 	{
-		 return sock.listen(max_con);
+		 sock.listen(max_con);
 	}
 	int get_fd(){
 		return sock.get_fd();

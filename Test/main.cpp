@@ -2,6 +2,8 @@
 #include "../net/EPoll.h"
 #include "../net/Acceptor.h"
 #include "../net/InetAddr.h"
+#include "../net/EventLoop.h"
+#include "../base/typedef.h"
 using namespace std;
 
 int main()
@@ -13,13 +15,11 @@ int main()
 	listenAddr.set_port(9000);
 	bool reuseport=true;
 	Acceptor acceptor(listenAddr,reuseport);
-	acceptor.listen(100);	
 	
-	EventLoop loop;
-	Channel channel(&loop,acceptor.get_fd());
-	EPoll poll;
-	poll.add(&channel);
-	
+	EventLoop loop(1000);
+	ChannelPtr channel(new Channel(&loop,acceptor.get_fd()));//属于loop 1:n
+	loop.addChannel(channel);
+	loop.runInloop(std::bind(&Acceptor::listen,std::ref(acceptor),100));// listenc出
 	loop.loop();
     return 0;
 }

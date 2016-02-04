@@ -1,9 +1,8 @@
 #ifndef EVENTLOOP_H
 #define EVENTLOOP_H
-#include <thread>
-#include <Mutex>
-#include <vector>
-#include <memory>
+#include <../base/typedef.h>
+#include "EPoll.h"
+#include "Channel.h"
 class EventLoop{
 	public:
 		EventLoop(int timeoutMs);
@@ -15,14 +14,21 @@ class EventLoop{
 			else
 				return false;
 		}
+		void updateChannel(ChannelPtr& channel);
+		void addChannel(ChannelPtr& channel);
+		void runInloop(const Callback& cb);
+		void DoPendingFunctor();
+		void wakeup();
+		void wakeupRead();
 	private:
 		bool is_start;
-		EPoll poller;
-		ChannelList activeChannels;
+		EPoll poller_;
+		ChannelList activeChannels_;
 	 	std::vector<Callback> pendingFunctors_;
-		std::Mutex mutex_;
+		std::mutex mutex_;
 		std::thread::id threadId_;
 		int wakeupFd_;
-		std::shared_ptr<Channel> wakeupChannel_; //不能被复制和赋值
+		ChannelPtr wakeupChannel_;
+		int timeoutMs_;
 };
 #endif
