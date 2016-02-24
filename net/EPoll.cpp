@@ -49,6 +49,8 @@ int  EPoll::update(int operation, const ChannelPtr& channel)
   event.data.ptr = (void *)channel.get();//这样写返回时，直接获取channel,
   if (::epoll_ctl(epollfd_, operation,channel->get_fd(), &event) < 0)//EPOLL_CTL_ADD, EPOLL_CTL_MOD,EPOLL_CTL_DEL
   {
+	std::cout<<"epoll_ctl error \n";
+	exit(0);
     if (operation == EPOLL_CTL_DEL)
     {
     	;

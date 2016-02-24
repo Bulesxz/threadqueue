@@ -6,6 +6,9 @@
 #include "../base/typedef.h"
 using namespace std;
 
+
+// g++ main.cpp ../net/Acceptor.cpp ../net/Channel.cpp ../net/EPoll.cpp ../net/EventLoop.cpp  -I../base -I. -I../net/  --std=c++11 -g
+
 int main()
 {
     cout << "Hello world!" << endl;
