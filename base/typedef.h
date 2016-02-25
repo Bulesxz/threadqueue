@@ -8,6 +8,7 @@
 #include <iostream>
 #include <assert.h>
 #include <string.h>
+#include <strings.h>
 typedef long Timestamp;//纳秒
 typedef std::function<void()> TimerCallback;
 typedef  std::function<void()> Callback;

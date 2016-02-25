@@ -5,11 +5,15 @@
 typedef std::function<void(Timestamp)>  ReadEventCallback;
 typedef std::function<void(void)>  EventCallback ;
 class EventLoop;
-class Channel{
+class Channel:public std::enable_shared_from_this<Channel> {
 	public:
 		Channel(EventLoop* loop, int fd);
-  		~Channel(){};
+  		~Channel(){std::cout<<"~Channe\n";};
 		void handleEvent(Timestamp receiveTime);
+		void setEventCallback(const EventCallback& cb)
+		{
+			eventCallback_ = cb;
+		}
 		void setReadCallback(const ReadEventCallback& cb)//设置回调函数
 		{ 
 			readCallback_ = cb; 
@@ -45,7 +49,7 @@ class Channel{
 		void update();
   		bool isNoneEvent() const { return events_ == kNoneEvent; }
 
-  		void enableReading() { events_ |= kReadEvent; update(); }
+  		void enableReading() { events_ |= kReadEvent;std::cout<<"events_:"<<events_<<"\n"; update(); }
   		void disableReading() { events_ &= ~kReadEvent; update(); }
   		void enableWriting() { events_ |= kWriteEvent; update(); }
   		void disableWriting() { events_ &= ~kWriteEvent; update(); }
@@ -67,6 +71,7 @@ class Channel{
 		EventCallback writeCallback_;
 		EventCallback closeCallback_;
 		EventCallback errorCallback_;
+		EventCallback eventCallback_;
 };
 
 #endif

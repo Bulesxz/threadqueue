@@ -13,15 +13,22 @@ Acceptor::Acceptor(InetAddr& listenAddr, bool reuseport)
 		int ret = sock.bindTcp(listenAddr.get_ip(),listenAddr.get_port());
 		if (ret<0)
 		{
+				std::cout<<"-------------\n";
 				return ;
 		}
 		sock.set_reuseaddr(true);
 		sock.set_reuseport(reuseport);
 }
-int Acceptor::handleRead()
+int Acceptor::handleAccept()
 {
 	InetAddr peerAddr;
   	int connfd = sock.accept(&peerAddr);
+
+	if (connfd >= 0)
+    {
+        if (newConnectionCallback_) newConnectionCallback_(connfd, peerAddr);
+        else ::close(connfd);
+    }
 	if (connfd < 0){
 		return connfd;
 	}

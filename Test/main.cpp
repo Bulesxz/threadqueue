@@ -22,6 +22,7 @@ int main()
 	EventLoop loop(1000);
 	ChannelPtr channel(new Channel(&loop,acceptor.get_fd()));//属于loop 1:n
 	channel->enableReading();
+	channel->setEventCallback(std::bind(&Acceptor::handleAccept,std::ref(acceptor)));	
 
 	loop.addChannel(channel);
 	loop.runInloop(std::bind(&Acceptor::listen,std::ref(acceptor),100));// listenc出

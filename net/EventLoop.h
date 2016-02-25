@@ -6,6 +6,9 @@
 class EventLoop{
 	public:
 		EventLoop(int timeoutMs);
+		~EventLoop(){
+			std::cout<<"~EventLoop\n";
+		}
 		void loop();
 		inline bool isInLoopThread()
 		{

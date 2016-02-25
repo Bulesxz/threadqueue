@@ -13,7 +13,7 @@ EventLoop::EventLoop(int timeoutMs):
 	wakeupChannel_(new Channel(this,wakeupFd_))
 {
 	wakeupChannel_->setReadCallback(std::bind(&EventLoop::wakeupRead,this));
-	wakeupChannel_->enableReading();
+	wakeupChannel_->enableReading();//必须先ADD再MOD
 	poller_.add(wakeupChannel_);
 }
 
@@ -37,13 +37,13 @@ void EventLoop::runInloop(const Callback& cb)
 	{
 		cb();
 	}
-	
+	else	
 	{
 		std::lock_guard<std::mutex> lock(mutex_);
 		pendingFunctors_.push_back(cb);
+		wakeup();
 	}
 	
-	wakeup();
 }
 
 void EventLoop::DoPendingFunctor()
