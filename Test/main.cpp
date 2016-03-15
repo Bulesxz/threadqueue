@@ -1,66 +1,31 @@
 #include <iostream>
-
-#include <thread_queue.h>
-#include <stdio.h>
-
-#include <unistd.h>
-#include <Asynclog.h>
-
+#include "../net/EPoll.h"
+#include "../net/Acceptor.h"
+#include "../net/InetAddr.h"
+#include "../net/EventLoop.h"
+#include "../base/typedef.h"
 using namespace std;
 
-using namespace daocode;
 
-daocode::threadQueue queue;
-
-void Eventhandle(const char *data,const int len)
-{
-    LOG_ERROR("data :%s len :%d",data,len);
-    //printf("Eventhandle %s %d------------- thread id %d\n",data,len,std::this_thread::get_id());
-}
-
-void Produce()
-{
-    int i=200;
-    while(i--){
-        queue.push_back(std::bind(&Eventhandle,"123456",i));
-    }
-}
-
-void Produce1()
-{
-    int i=10;
-    while(i-- ){
-        queue.push_back(std::bind(&Eventhandle,"123456",i));
-    }
-    std::cout<<"Produce\n";
-}
+// g++ main.cpp ../net/Acceptor.cpp ../net/Channel.cpp ../net/EPoll.cpp ../net/EventLoop.cpp  -I../base -I. -I../net/  --std=c++11 -g
 
 int main()
 {
+    cout << "Hello world!" << endl;
+	
+	InetAddr listenAddr;
+	listenAddr.set_ip("127.0.0.1");
+	listenAddr.set_port(9000);
+	bool reuseport=true;
+	Acceptor acceptor(listenAddr,reuseport);
+	
+	EventLoop loop(1000);
+	ChannelPtr channel(new Channel(&loop,acceptor.get_fd()));//å±žäºŽloop 1:n
+	channel->enableReading();
+	channel->setEventCallback(std::bind(&Acceptor::handleAccept,std::ref(acceptor)));	
 
-    CSingletonLogger::GetInstance()->set_logger(new AsyncLog("test.log",100000));
-    CSingletonLogger::GetInstance()->get_logger()->set_level(LEVEL_TRACE);
-    CSingletonLogger::GetInstance()->get_logger()->start();
-
-    queue.start();
-    cout << "Hello world!.....begin" << endl;
-    usleep(1000);
-    //queue.push_back(std::bind(&Eventhandle,"12356",6));
-
-    std::thread pthread(std::bind(&Produce));
-    pthread.detach();
-    //pthread.join();//»á×èÈûÖ÷Ïß³Ì£¬µÄqueueÎö¹¹ error
-
-    //LOG_ERROR("data :%s len :%d","aaaaaaaa",100);
-    //LOG_ERROR("data :%s len :%d","aaaaaaaa",100);
-
-
-  /*  std::vector< std::shared_ptr<std::thread> > &work_threads=queue.get_work_threads();
-    for (int i=0;i<(int)work_threads.size();i++){
-        work_threads[i]->join();
-    }*/
-
-    while(true);
-    //std::this_thread::sleep_for(std::chrono::milliseconds(10000));//µÈ´ýÈÎÎñ¸ÉÍê
+	loop.addChannel(channel);
+	loop.runInloop(std::bind(&Acceptor::listen,std::ref(acceptor),100));// listencå‡º
+	loop.loop();
     return 0;
 }
