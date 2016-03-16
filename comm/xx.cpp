@@ -4,12 +4,13 @@
 #include <algorithm>
 #include <map>
 #include <stddef.h>
+#include <vector>
 using namespace std;
 struct KV{
 	string key;
 	string value;
 	void print(){
-        cout<<"¼üÖµ¶Ô<"<<key<<":"<<value<<">"<<endl;
+        cout<<"é”®å€¼å¯¹<"<<key<<"="<<value<<">"<<endl;
 	}
 };
 
@@ -23,14 +24,14 @@ struct Node{
 		root=NULL;
 	}
 	~Node(){
-	    cout<<"~delete\n";
+	    //cout<<"~delete\n";
         map<string,Node*>::iterator it;
         for(it=childMap.begin();it!=childMap.end();++it){
             delete it->second;
         }
 	}
 	void print(){
-			cout<<"½Úµã<"<<tag<<">"<<endl;
+			cout<<"èŠ‚ç‚¹<"<<tag<<">"<<endl;
 			/*if(kvList.size()==0){
                cout<<"null kvList"<<endl;
 			}*/
@@ -51,28 +52,37 @@ void print(Node* node)
 }
 
 
-string search(Node* node,string key){
-	cout<<"search\n";
+Node *search(Node* node,string key,string value){
+	cout<<"search---------------\n";
 	if(node==NULL)
 	{
-		return "";
+		cout<<"search node==NULL ---------------\n";
+		return NULL;
 	}else{
 		map<string,Node*>::iterator it;
         it=node->childMap.begin();
         //it->second->print();
-        map<string,Node*>::iterator tt=(it->second->childMap).begin();
-        for (;tt!=(it->second->childMap).end();tt++){
-            //cout<<tt->first<<":";
-            //(tt->second)->print();
-            //for(int i=0;i<tt->kvList.size();i++){
-               // tt->kvList[i].print();
-            //}
-            //cout<<"cmd:"<<n->tag<<endl;
-            tt->second->print();
-        }
+	map<string,Node*>::iterator tt=(it->second->childMap).begin();
+	for (;tt!=(it->second->childMap).end();tt++){
+		//cout<<tt->first<<":";
+		//(tt->second)->print();
+		//for(int i=0;i<tt->kvList.size();i++){
+		// tt->kvList[i].print();
+		//}
+		//cout<<"cmd:"<<n->tag<<endl;
+		//tt->second->print();
+		for (int i=0;i< tt->second->kvList.size();i++){
+			if(tt->second->kvList[i].key==key && tt->second->kvList[i].value==value)
+			{
+				//tt->second->kvList[i].print();
+				//tt->second->print();
+				return tt->second;
+			}
+		}
+	}
 
 	}
-	return "";
+	return NULL;
 }
 
 
@@ -81,45 +91,44 @@ void trim(string *str,string split=" \t\n")
 	str->erase(0,str->find_first_not_of(split));
 	str->erase(str->find_last_not_of(split) + 1);
 }
-int parse()
+Node* parse()
 {
 	ifstream in("test.txt");
 	string str;
 	if (!in.is_open())
 	{
 		cout << "Error opening file";
-		return 1;
+		return NULL;
 	}
-	Node* tree;
+	Node *tree=NULL;
 	Node* root;
-	tree=NULL;
 	root=NULL;
 	while (getline(in,str))
 	{
 		trim(&str);
 		if (str.empty())
 			continue;
-		if (str.at(0)=='#'){//×¢ÊÍ
+		if (str.at(0)=='#'){//æ³¨é‡Š
 			cout<<"# continue"<<endl;
 			continue;
 		}
 		//cout<<str<<endl;
-		if (str.length()<3){//Ò»ÐÐ×îÉÙ3¸ö×Ö·û
+		if (str.length()<3){//ä¸€è¡Œæœ€å°‘3ä¸ªå­—ç¬¦
 			cout<<"str.length()<3 error"<<endl;
-                        return 1;
+                        return NULL;
 		}
 		if (str.at(0)=='<' && str.at(str.size()-1)=='>'){ //<> </>
 			if (str.at(1)=='/' && str.length() < 4){//</>
 				cout<<"str.length()<4 error"<<endl;
-                                return 1;
+                                return NULL;
 			}
 
-			if (str.at(1)!='/'){//<aaa> //ÐÂ½Úµã
+			if (str.at(1)!='/'){//<aaa> //æ–°èŠ‚ç‚¹
 				string s=str.substr(1,str.size()-2);
 				trim(&s);
 				if(s.empty()){//</>
 					cout<<"empty error\n";
-					return 1;
+					return NULL;
 				}
 				Node * node = new Node;
 				node->tag=s ;
@@ -136,23 +145,23 @@ int parse()
 				trim(&s);
 				if(s.empty()){
 					cout<<"empty error\n";
-					return 1;
+					return NULL;
 				}
 				if (root->tag!=s){
 					cout<<"not find error:"<<s<<endl;
-                                        return 1;
+                                        return NULL;
 				}
 				root=root->root;
 			}
 		}else {
 			if(0==count(str.begin(), str.end(), '=')){//== aa
 			 	cout<<"1= ! error\n";
-                        	return 1;
+                        	return NULL;
 			}else{//aa=a =a a=
 				int index = str.find("=",0);
 				if (index<=0 /*|| index==(str.length()-1)*/){//=a
 					cout<<"index<=0 || index==str.length()-1 error\n";
-                                        return 1;
+                                        return NULL;
 				}
 
 				string lstr,rstr;
@@ -160,7 +169,7 @@ int parse()
 				trim(&lstr);
 				if(lstr.empty()){//=a
                                         cout<<"lstr rempty error\n";
-					return 1;
+					return NULL;
 				}
 				rstr.assign(str,index+1,str.length()-index-1);
 				trim(&rstr);
@@ -177,18 +186,22 @@ int parse()
 		}
 	}
 
-	cout<<"----------------------\n";
-	print(tree);
-    search(tree,"1");
-    delete  tree;
-	return 0;
+//	cout<<"----------------------\n";
+//	print(tree);
+	return tree;
 }
 
 
 int main()
 {
 	//cout<<"test\n";
-	cout<<parse();
+	Node* tree = parse();
+	string pre_sql_id;
+	cout<<"enter pre_sql_id:"<<endl;
+	cin>>pre_sql_id;
+	
+    	Node* node = search(tree,"pre_sql_id",pre_sql_id);
+    	if (node!=NULL) node->print();
+	if(tree!=NULL)delete  tree;
 	return 0;
 }
-
