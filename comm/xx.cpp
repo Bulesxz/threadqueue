@@ -124,23 +124,25 @@ Node* parse()
 	Node *tree=NULL;
 	Node* root;
 	root=NULL;
+	int line=0;
 	while (getline(in,str))
 	{	
+		line++;
 		trim(&str);
 		if (str.empty())
 			continue;
 		if (str.at(0)=='#'){//注释
-			cout<<"# continue"<<endl;
+			//cout<<"# continue"<<endl;
 			continue;
 		}
 		//cout<<str<<endl;
 		if (str.length()<3){//一行最少3个字符
-			cout<<"str.length()<3 error"<<endl;
+			cout<<"line:"<<line<<":str.length()<3 error"<<endl;
                         return NULL;
 		}
 		if (str.at(0)=='<' && str.at(str.size()-1)=='>'){ //<> </>
 			if (str.at(1)=='/' && str.length() < 4){//</>
-				cout<<"str.length()<4 error"<<endl;
+				cout<<"line:"<<line<<":str.length()<4 error"<<endl;
                                 return NULL;
 			}
 
@@ -148,7 +150,7 @@ Node* parse()
 				string s=str.substr(1,str.size()-2);
 				trim(&s);
 				if(s.empty()){//</>
-					cout<<"empty error\n";
+					cout<<"line:"<<line<<":empty error\n";
 					return NULL;
 				}
 				Node * node = new Node;
@@ -166,24 +168,26 @@ Node* parse()
 				string s=str.substr(2,str.size()-3);
 				trim(&s);
 				if(s.empty()){
-					cout<<"empty error\n";
+					cout<<"line:"<<line<<":empty error\n";
 					return NULL;
 				}
-				if (root->tag!=s){
-					cout<<"not find error:"<<s<<endl;
+				if (root->tag!=s || root->end==true){
+					cout<<"line:"<<line<<":</>not find error:"<<s<<endl;
                                         return NULL;
 				}
 				root->end=true;
-				root=root->root;
+				if(root->root!=NULL){
+					root=root->root;
+				}
 			}
 		}else {
 			if(0==count(str.begin(), str.end(), '=')){//== aa
-			 	cout<<"1= ! error\n";
+			 	cout<<"line:"<<line<<":1= ! error\n";
                         	return NULL;
 			}else{//aa=a =a a=
 				int index = str.find("=",0);
 				if (index<=0 /*|| index==(str.length()-1)*/){//=a
-					cout<<"index<=0 || index==str.length()-1 error\n";
+					cout<<"line:"<<line<<":index<=0 || index==str.length()-1 error\n";
                                         return NULL;
 				}
 
@@ -211,7 +215,7 @@ Node* parse()
 	bool end=true;
 	checkEnd(tree,end);
 	if(end==false){
-		cout<<"no end error----------\n";
+		cout<<"no end <> </> error----------\n";
 		return NULL;
 	}
 //	cout<<"----------------------\n";
@@ -225,11 +229,13 @@ int main()
 	//cout<<"test\n";
 	Node* tree = parse();
 	if (tree==NULL){
-		cout<<"***************parse error***************\n";
+		cout<<"***************parse error 请检查***************\n";
 		return 1;
+	}else{
+		cout<<"--------解析成功--------"<<endl;
 	}
 	string pre_sql_id;
-	cout<<"enter pre_sql_id:"<<endl;
+	cout<<"随便测试一个... enter pre_sql_id(10进制):"<<endl;
 	cin>>pre_sql_id;
 	
     	Node* node = search(tree,"pre_sql_id",pre_sql_id);
