@@ -20,7 +20,9 @@ struct Node{
 	vector<KV> kvList;
 	map<string, Node* > childMap;
 	Node* root;
+	bool end;//一个完整节点 有<>  </>
 	Node(){
+		end=false;
 		root=NULL;
 	}
 	~Node(){
@@ -49,6 +51,25 @@ void print(Node* node)
                         print(it->second);
                 }
         }
+}
+
+
+void checkEnd(Node* node,bool &end)
+{       
+        if(node!=NULL){
+		if(end==false||node->end==false){
+			end=false;
+			return ;
+		}
+                map<string,Node*>::iterator it;
+                for(it=node->childMap.begin();it!=node->childMap.end();++it){
+                        checkEnd(it->second,end);
+                }
+        }else{
+		end=false;
+		return;	
+	}
+	end=true;
 }
 
 
@@ -104,7 +125,7 @@ Node* parse()
 	Node* root;
 	root=NULL;
 	while (getline(in,str))
-	{
+	{	
 		trim(&str);
 		if (str.empty())
 			continue;
@@ -140,6 +161,7 @@ Node* parse()
 					tree=node;
 				}
 				root=node;
+				node->end=false;
 			}else{//</a>
 				string s=str.substr(2,str.size()-3);
 				trim(&s);
@@ -151,6 +173,7 @@ Node* parse()
 					cout<<"not find error:"<<s<<endl;
                                         return NULL;
 				}
+				root->end=true;
 				root=root->root;
 			}
 		}else {
@@ -185,7 +208,12 @@ Node* parse()
 			}
 		}
 	}
-
+	bool end=true;
+	checkEnd(tree,end);
+	if(end==false){
+		cout<<"no end error----------\n";
+		return NULL;
+	}
 //	cout<<"----------------------\n";
 //	print(tree);
 	return tree;
@@ -196,6 +224,10 @@ int main()
 {
 	//cout<<"test\n";
 	Node* tree = parse();
+	if (tree==NULL){
+		cout<<"***************parse error***************\n";
+		return 1;
+	}
 	string pre_sql_id;
 	cout<<"enter pre_sql_id:"<<endl;
 	cin>>pre_sql_id;
