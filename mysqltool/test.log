@@ -1,0 +1,2 @@
+[ERROR MysqlTool.cpp 40 exec ]Failed to mysql_real_query database: Error: Duplicate entry '111111' for key 'PRIMARY'
+ 

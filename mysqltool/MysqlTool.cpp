@@ -1,6 +1,11 @@
 #include "MysqlTool.h"
 #include <stdio.h>
 #include <mysql/errmsg.h>
+
+#include <logger.h>
+
+using namespace daocode;
+
 MysqlTool::MysqlTool(std::string host,std::string user,std::string passwd,std::string database):m_host(host),m_user(user),
 		m_passwd(passwd),m_database(database),mysql(NULL)
 {
@@ -10,7 +15,7 @@ int MysqlTool::Init()
 {
 	mysql= mysql_init(NULL);
 	if (mysql==NULL){
-		fprintf(stderr, "Failed to mysql_init\n");
+		LOG_ERROR("Failed to mysql_init\n",0);
 		return -1;
 	}
 	return 0;
@@ -22,7 +27,7 @@ int MysqlTool::Connect()
 
 	if (!mysql_real_connect(mysql,m_host.c_str(),m_user.c_str(),m_passwd.c_str(),m_database.c_str(),0,NULL,0))
 	{
-		fprintf(stderr, "Failed to connect to database: Error: %s\n", mysql_error(mysql));
+		LOG_ERROR("Failed to connect to database: Error: %s\n", mysql_error(mysql));
 		return -1;
 	}
 	return 0;
@@ -32,7 +37,7 @@ int MysqlTool::exec(const std::string sql,Result &retsql)
 {
 	int err = mysql_real_query(mysql,sql.c_str(),sql.size());
 	if (err!=0){
-			fprintf(stderr, "Failed to mysql_real_query database: Error: %s\n", mysql_error(mysql));
+			LOG_ERROR("Failed to mysql_real_query database: Error: %s\n", mysql_error(mysql));
 			retsql.ret = err;
 			return err;
 	}
@@ -41,7 +46,7 @@ int MysqlTool::exec(const std::string sql,Result &retsql)
 	if (result==NULL){
 		err = mysql_errno(mysql);
 		if (err!=0){
-			fprintf(stderr, "Failed to mysql_store_result database: Error: %s\n", mysql_error(mysql));
+			LOG_ERROR("Failed to mysql_store_result database: Error: %s\n", mysql_error(mysql));
 			if (CR_SERVER_LOST==err){
 				this->Connect();//重连
 			}

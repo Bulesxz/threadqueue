@@ -1,4 +1,6 @@
-CFLAGS = -Wall -g -std=c++11 
+#DEBUGFALG=DEBUG
+DEBUGFALG=RELEASE
+CXXFLAGS = -Wall -g -std=c++11 -D$(DEBUGFALG)
 LDFLAGS = -L/usr/lib64/mysql/  -lmysqlclient
 BASEDIR= ../base
 THREADDIR=../thread
@@ -13,10 +15,10 @@ OBJS := $(patsubst %.cpp,%.o ,$(SRCS))
 #	@echo "objs : " $(OBJS) "src: " $(SRCS)
 
 $(TAGTET):$(OBJS)
-	g++  $(CFLAGS) $(LDFLAGS) -o $(TAGTET) $(OBJS)
+	g++  $(CXXFLAGS) $(LDFLAGS) -o $(TAGTET) $(OBJS)
 
 %.o:%.cpp
-	g++  $(CFLAGS) $(LDFLAGS) $(INCPATH) -c $< -o $@
+	g++  $(CXXFLAGS) $(LDFLAGS) $(INCPATH) -c $< -o $@
 
 .PHONY : clean
 clean :

@@ -33,13 +33,13 @@ void AsyncLog::log_out(const char *data,int len)//多个线程
    // sprintf(data,"time :%s i:%d \n",__TIME__,i);
     buff.append(data,strlen(data));
     cond.notify_one();
-    std::cout<<"AsyncLog::log_out\n";
+    //std::cout<<"AsyncLog::log_out\n";
 }
 void AsyncLog::log_write()//一个线程
 {
     std::unique_lock <std::mutex> lck (mtx);
     while (is_start) {
-        std::cout<<"while...\n";
+//        std::cout<<"while...\n";
         lck.unlock();
         if (buff.readableBytes()==0){
             lck.lock();
@@ -49,7 +49,7 @@ void AsyncLog::log_write()//一个线程
 
         while(buff.readableBytes()>0){
             int len = buff.readableBytes();
-            std::cout<<buff.GetPeek();
+         //   std::cout<<buff.GetPeek();
             file.Write(buff.GetPeek(),len);
             buff.seek(len);
         }
@@ -65,18 +65,17 @@ void AsyncLog::log_write()//一个线程
             lck.unlock();
         }
         lck.lock();
-        std::cout<<"cond.wait...\n";
+//        std::cout<<"cond.wait...\n";
         cond.wait(lck);
-        std::cout<<"cond.wait\n";
+  //      std::cout<<"cond.wait\n";
     }
 }
 
 void AsyncLog::write(LogLevel level,const char* filename,int line,const char* func,const char *msg)
 {
+//	std::cout<<"AsyncLog::write\n";
     char buf[4096]={0};
     int len = snprintf(buf, 4096,"[%s %s %d %s ]%s \n",LOG[level],filename,line,func,msg);
-    //std::cout<<buf;
-
     log_out(buf,len);
 }
 

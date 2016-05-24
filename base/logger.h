@@ -61,7 +61,6 @@ private:
     static CGarbo Garbo; //定义一个静态成员，程序结束时，系统会自动调用它的析构函数
 };
 
-
 #define LOG_TRACE(fmt,...)    \
         daocode::CSingletonLogger::GetInstance()->get_logger()->log_write(LEVEL_TRACE, __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
 #define LOG_DEBUG(fmt,...)    \
@@ -74,7 +73,6 @@ private:
         daocode::CSingletonLogger::GetInstance()->get_logger()->log_write(LEVEL_ERROR, __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
 #define LOG_FATAL(fmt,...)    \
         daocode::CSingletonLogger::GetInstance()->get_logger()->log_write(LEVEL_FATAL, __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
-
 
 }
 
