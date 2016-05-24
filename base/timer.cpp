@@ -18,14 +18,14 @@ int createTimerfd()
   return timerfd;
 }
 
-
+/*
 Timestamp Now()
 {
     struct timespec ns={0, 0};  
     clock_gettime(CLOCK_REALTIME, &ns);  
     return Timestamp(ns.tv_sec*1000000000 + ns.tv_nsec);
 }
-
+*/
 timespec TimestampTotimespec(Timestamp nsec)
 {
     struct timespec ts;

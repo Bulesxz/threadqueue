@@ -63,17 +63,17 @@ private:
 
 
 #define LOG_TRACE(fmt,...)    \
-        daocode::CSingletonLogger::GetInstance().get_logger()->log_write(LEVEL_TRACE, __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
+        daocode::CSingletonLogger::GetInstance()->get_logger()->log_write(LEVEL_TRACE, __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
 #define LOG_DEBUG(fmt,...)    \
-        daocode::CSingletonLogger::GetInstance().get_logger()->log_write(LEVEL_DEBUG, __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
+        daocode::CSingletonLogger::GetInstance()->get_logger()->log_write(LEVEL_DEBUG, __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
 #define LOG_INFO(fmt,...)    \
-        daocode::CSingletonLogger::GetInstance().get_logger()->log_write(LEVEL_INFO,  __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
+        daocode::CSingletonLogger::GetInstance()->get_logger()->log_write(LEVEL_INFO,  __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
 #define LOG_WARN(fmt,...)    \
-        daocode::CSingletonLogger::GetInstance().get_logger()->log_write(LEVEL_WARN,  __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
+        daocode::CSingletonLogger::GetInstance()->get_logger()->log_write(LEVEL_WARN,  __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
 #define LOG_ERROR(fmt,...)    \
         daocode::CSingletonLogger::GetInstance()->get_logger()->log_write(LEVEL_ERROR, __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
 #define LOG_FATAL(fmt,...)    \
-        daocode::CSingletonLogger::GetInstance().get_logger()->log_write(LEVEL_FATAL, __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
+        daocode::CSingletonLogger::GetInstance()->get_logger()->log_write(LEVEL_FATAL, __FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
 
 
 }

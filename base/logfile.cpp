@@ -31,7 +31,9 @@ int LogFile::open()
     fp_ = fd;
 
     struct stat st;
-    int ret = fstat(fp_->_file,&st);
+    //int ret = fstat(fp_->_file,&st);
+	int ret = fstat(fileno(fp_),&st);
+
     if(ret == -1)
     {
         LOG_ERROR("error=%s\n", strerror(errno));
